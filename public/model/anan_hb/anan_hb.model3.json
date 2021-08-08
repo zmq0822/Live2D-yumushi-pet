@@ -1,0 +1,10 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "anan_hb.moc3",
+		"Textures": [
+			"anan_hb.1024/texture_00.png"
+		],
+		"DisplayInfo": "anan_hb.cdi3.json"
+	}
+}
