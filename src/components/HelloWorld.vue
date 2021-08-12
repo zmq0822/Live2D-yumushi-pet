@@ -1,17 +1,44 @@
 <template>
   <div @mouseenter="showButton = true" @mouseleave="showButton = false">
-    <div id="floatElement"></div>
-    <!-- <a>{{model!=null?model.dialogClock:'a'}}</a> -->
+    <div
+      id="floatElement"
+      :style="
+        'border-top: 15px solid rgba(0, 0, 0, ' +
+        (showButton ? '1' : '0.5') +
+        ');'
+      "
+    ></div>
+    <v-slide-x-transition>
+      <v-progress-circular
+        id="floatRing"
+        v-show="showButton"
+        :rotate="-90"
+        :width="20"
+        :value="model != null ? (model.activeClock % 1200) / 12 : 0"
+      ><v-icon dark small>mdi-bell</v-icon>
+      </v-progress-circular>
+    </v-slide-x-transition>
     <v-slide-y-reverse-transition>
-    <div id="floatDialog" :style="'font-size:' + Math.sqrt(Math.min($vuetify.breakpoint.width, $vuetify.breakpoint.height)) * 6 + '%;'" v-show="model!=null?model.dialogClock:true">该摸鱼啦</div>
+      <div
+        id="floatDialog"
+        :style="
+          'font-size:' +
+          Math.sqrt(
+            Math.min($vuetify.breakpoint.width, $vuetify.breakpoint.height)
+          ) *
+            6 +
+          '%;'
+        "
+        v-show="model != null ? model.dialogClock : false"
+      >该摸鱼啦</div>
     </v-slide-y-reverse-transition>
-    <v-container style="padding:0px;">
+    <v-container style="padding: 0px">
       <v-row no-gutters>
         <v-col cols="9">
           <canvas id="canvas"></canvas>
         </v-col>
         <v-slide-x-reverse-transition>
-          <v-col cols="3" v-show="showButton" style="z-index:25;">
+          <v-col cols="3" v-show="showButton" style="z-index: 25">
             <v-row no-gutters>
               <v-col cols="12" class="floatBotton">
                 <v-btn class="mx-2" fab dark x-small>
@@ -37,31 +64,28 @@
 </template>
 
 <script>
-import { main } from '../assets/live2d/index'
+import { main } from "../assets/live2d/index";
 
 export default {
   data () {
     return {
       showButton: false,
-      model: null
-    }
+      model: null,
+    };
   },
   mounted () {
     this.$nextTick(() => {
-      main().then((res)=>{
+      main().then((res) => {
         this.model = res;
-        // console.log(res);
-      })
-    })
+      });
+    });
   },
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
-    msg: String
+    msg: String,
   },
-  methods: {
-
-  }
-}
+  methods: {},
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -75,7 +99,6 @@ export default {
   background-color: rgba(0, 0, 0, 0);
   z-index: 30;
   -webkit-app-region: drag;
-  border-top: 15px solid rgba(0, 0, 0, 0.5);
   border-right: 15px solid transparent;
 }
 #floatDialog {
@@ -86,7 +109,7 @@ export default {
   min-height: 25%;
   width: 90%;
   background-color: rgba(255, 196, 0, 0.3);
-  border:1px solid rgba(255, 196, 0, 0.8);
+  border: 1px solid rgba(255, 196, 0, 0.8);
   border-radius: 15px;
   z-index: -1;
   display: -webkit-box;
@@ -100,5 +123,11 @@ export default {
   margin: 5px;
   z-index: 25;
   float: right;
+}
+#floatRing {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  z-index: 25;
 }
 </style>
