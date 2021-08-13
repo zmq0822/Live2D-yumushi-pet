@@ -13,11 +13,9 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 240,
-    height: 320,
-    minWidth: 240,
-    minHeight: 320,
+    fullscreen: true,
     transparent: true,
+    resizable: false,
     frame: false,
     webPreferences: {
 
@@ -31,6 +29,7 @@ async function createWindow () {
   })
 
   win.setAlwaysOnTop(true, "pop-up-menu")
+  win.setIgnoreMouseEvents(true, { forward: true })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -91,4 +90,10 @@ if (isDevelopment) {
 // Show system notice
 ipcMain.on('notice', (event, args) => {
   new Notification({ title: args[0], body: args[1], timeoutType: 'never' }).show()
+})
+
+// Ignore the mouse event
+ipcMain.on('ignoreMouse', (event, args) => {
+  // console.log(args)
+  BrowserWindow.fromWebContents(event.sender).setIgnoreMouseEvents(args, { forward: true })
 })

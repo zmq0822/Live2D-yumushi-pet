@@ -7,18 +7,19 @@ const config = JSON.parse(load("config.json"));
  * @param {string} url The URL for live2d-model / 模型文件的地址
  * @param {object} app The pixi stage / pixi舞台
  */
-export async function addLive2DModel (url, app) {
+export async function addLive2DModel(url, app) {
     // create & init a model / 创建并初始化模型
     const model = await Live2DModel.from(url);
     // add the model into stage / 向舞台中添加模型
     app.stage.addChild(model);
     // fit the window / 初始化模型的大小和位置
-    const scaleX = (innerWidth) / model.width;
-    const scaleY = (innerHeight) / model.height;
+    const scaleX = app.renderer.width / model.width;
+    const scaleY = app.renderer.height / model.height;
     model.anchor.set(0.5, 0.5)
     model.scale.set(Math.min(scaleX, scaleY));
-    model.position.x = innerWidth / 2
-    model.position.y = innerHeight - model.height / 2
+    app.renderer.resize(model.width, model.height)
+    model.position.x = model.width / 2
+    model.position.y = model.height / 2
     // set clock / 设置时钟
     model.dialogClock = 0;
     model.activeClock = 0;
@@ -34,7 +35,7 @@ export async function addLive2DModel (url, app) {
  * @param {Live2DModel} model 
  * @param {object} app The pixi stage / pixi舞台
  */
-function modelController (model, app) {
+function modelController(model, app) {
     // drag control / 拖拽控制
     model.buttonMode = true;
     model.on("pointerdown", (e) => {
@@ -55,9 +56,12 @@ function modelController (model, app) {
     // scale control / 缩放控制
     window.addEventListener("mousewheel", (e) => {
         const step = e.wheelDelta > 0 ? 1.1 : 0.9
-        if (model.scale.x * step > 0 && model.scaling === true) {
+        if (model.scaling === true && model.width * step > 150 && model.width * step < 1080) {
             model.scale.x *= step
             model.scale.y = model.scale.x
+            app.renderer.resize(model.width, model.height)
+            model.position.x = app.renderer.width / 2
+            model.position.y = app.renderer.height / 2
         }
     });
     model.on("pointerover", () => (model.scaling = true));
@@ -73,7 +77,7 @@ function modelController (model, app) {
  * Dialog clock control / 对话框时钟控制
  * @param {object} model The pixi stage / pixi舞台
  */
-function clockLoop (model) {
+function clockLoop(model) {
     model.timer = setInterval(function () {
         if (model.dialogClock > 0) {
             model.dialogClock--;
@@ -91,7 +95,7 @@ function clockLoop (model) {
  * @param {object} model The pixi stage / pixi舞台
  * @param {string} text The dialog text / 对话框文本
  */
-function showDialog (model, text) {
+function showDialog(model, text) {
     document.getElementById('floatDialog').innerHTML = text;
     model.dialogClock = config.dialogDuration;
 }
@@ -100,7 +104,7 @@ function showDialog (model, text) {
  * @param {string} name The URL for resource / 资源地址
  * @returns 
  */
-function load (name) {
+function load(name) {
     let xhr = new XMLHttpRequest(),
         okStatus = document.location.protocol === "file:" ? 0 : 200;
     xhr.open('GET', name, false);
