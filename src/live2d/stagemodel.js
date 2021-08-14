@@ -1,15 +1,13 @@
-const { Live2DModel } = require('pixi-live2d-display');
-const { ipcRenderer } = window.require('electron');
-const config = JSON.parse(load("config.json"));
+import _this from '../main'
 
 /**
  * Add a model into stage / 向舞台中添加一个模型
  * @param {string} url The URL for live2d-model / 模型文件的地址
  * @param {object} app The pixi stage / pixi舞台
  */
-export async function addLive2DModel(url, app) {
+export async function addLive2DModel (url, app) {
     // create & init a model / 创建并初始化模型
-    const model = await Live2DModel.from(url);
+    const model = await _this.$live2d.from(url);
     // add the model into stage / 向舞台中添加模型
     app.stage.addChild(model);
     // fit the window / 初始化模型的大小和位置
@@ -24,7 +22,7 @@ export async function addLive2DModel(url, app) {
     model.dialogClock = 0;
     model.activeClock = 0;
     // run function below / 运行下列方法
-    showDialog(model, '今天你摸鱼了吗？');
+    showDialog(model, getText('hello'));
     clockLoop(model);
     modelController(model, app);
     return model;
@@ -35,12 +33,12 @@ export async function addLive2DModel(url, app) {
  * @param {Live2DModel} model 
  * @param {object} app The pixi stage / pixi舞台
  */
-function modelController(model, app) {
+function modelController (model, app) {
     // drag control / 拖拽控制
     model.buttonMode = true;
     model.on("pointerdown", (e) => {
         model.dragging = true;
-        showDialog(model, '哇哦');
+        showDialog(model, getText('touch'));
         model._pointerX = e.data.global.x - model.x;
         model._pointerY = e.data.global.y - model.y;
     });
@@ -51,8 +49,8 @@ function modelController(model, app) {
             model.position.y = e.data.global.y - model._pointerY;
         }
     });
-    model.on("pointerupoutside", () => (model.dragging = false, app.renderer.backgroundColor = 0x000000, showDialog(model, '该摸鱼啦')));
-    model.on("pointerup", () => (model.dragging = false, app.renderer.backgroundColor = 0x000000, showDialog(model, '该摸鱼啦')));
+    model.on("pointerupoutside", () => (model.dragging = false, app.renderer.backgroundColor = 0x000000));
+    model.on("pointerup", () => (model.dragging = false, app.renderer.backgroundColor = 0x000000));
     // scale control / 缩放控制
     window.addEventListener("mousewheel", (e) => {
         const step = e.wheelDelta > 0 ? 1.1 : 0.9
@@ -77,15 +75,15 @@ function modelController(model, app) {
  * Dialog clock control / 对话框时钟控制
  * @param {object} model The pixi stage / pixi舞台
  */
-function clockLoop(model) {
+function clockLoop (model) {
     model.timer = setInterval(function () {
         if (model.dialogClock > 0) {
             model.dialogClock--;
         }
         model.activeClock++;
-        if (config.reminderVisible && model.activeClock % config.reminderDuration === 0) {
-            showDialog(model, '休息时间到了，该摸鱼啦');
-            ipcRenderer.send('notice', ['摸鱼时间', '休息时间到了，该摸鱼啦'])
+        if (_this.$store.getters.getConfig.reminderVisible && model.activeClock % _this.$store.getters.getConfig.reminderDuration === 0) {
+            showDialog(model, getText('rest'));
+            _this.$ipcRenderer.send('notice', ['✋🐟', getText('rest')])
         }
     }, 1000);
 }
@@ -95,20 +93,17 @@ function clockLoop(model) {
  * @param {object} model The pixi stage / pixi舞台
  * @param {string} text The dialog text / 对话框文本
  */
-function showDialog(model, text) {
-    document.getElementById('floatDialog').innerHTML = text;
-    model.dialogClock = config.dialogDuration;
+function showDialog (model, text) {
+    document.getElementById('floatDialog').innerHTML = text
+    model.dialogClock = _this.$store.getters.getConfig.dialogDuration;
 }
+
 /**
- * Load resource by xml / 使用xml读取数据
- * @param {string} name The URL for resource / 资源地址
- * @returns 
+ * Return the random word / 返回随机怪话
+ * @param {string} text The dialog text / 对话框文本
  */
-function load(name) {
-    let xhr = new XMLHttpRequest(),
-        okStatus = document.location.protocol === "file:" ? 0 : 200;
-    xhr.open('GET', name, false);
-    xhr.overrideMimeType("text/html;charset=utf-8");
-    xhr.send(null);
-    return xhr.status === okStatus ? xhr.responseText : null;
+function getText (text) {
+    let texts = _this.$t(text).split("|")
+    let idex = Math.floor((Math.random() * (texts.length - 1)) + 1)
+    return texts[idex]
 }

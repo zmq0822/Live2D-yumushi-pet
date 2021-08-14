@@ -7,7 +7,7 @@
             id="floatDialog"
             :style="floatDialogStyle"
             v-show="model !== null ? model.dialogClock : false"
-          >该摸鱼啦</div>
+          >O_O</div>
         </v-slide-y-reverse-transition>
       </v-row>
       <v-row no-gutters>
@@ -22,7 +22,7 @@
                   :rotate="-90"
                   :size="this.modelWidth / 6"
                   :width="this.modelWidth / 12"
-                  :value="model !== null ? (model.activeClock % 1200) / 12 : 0"
+                  :value="clockCal()"
                 >
                   <v-icon dark :size="iconSize">mdi-bell</v-icon>
                 </v-progress-circular>
@@ -33,7 +33,14 @@
                 </v-btn>
               </v-col>
               <v-col cols="12" class="floatBotton">
-                <v-btn fab dark :width="buttonSize" :height="buttonSize" elevation="0" @click="resetModel()">
+                <v-btn
+                  fab
+                  dark
+                  :width="buttonSize"
+                  :height="buttonSize"
+                  elevation="0"
+                  @click="resetModel()"
+                >
                   <v-icon dark :size="iconSize">mdi-autorenew</v-icon>
                 </v-btn>
               </v-col>
@@ -51,7 +58,7 @@
 </template>
 
 <script>
-import { main } from "../assets/live2d/index";
+import { main } from "../live2d";
 
 export default {
   data () {
@@ -67,20 +74,29 @@ export default {
       });
     });
   },
-  name: "HelloWorld",
+  name: "TouchFish",
   props: {
     msg: String,
   },
   methods: {
-    async resetModel(){
-      // if (this.model !== null) {
-      //   clearInterval(this.model.timer);
-      //   console.log(this.model)
-      //   this.model.destroy(true);
-      //   this.model = null;
-      // }
-      // let model = await main();
-      // this.model = model;
+    resetModel () {
+      if (this.model !== null) {
+        clearInterval(this.model.timer);
+        this.model.destroy(true);
+        this.model = null;
+      }
+      main().then((res) => {
+        this.model = res;
+      });
+    },
+    clockCal () {
+      let clock = (this.model !== null ? this.model.activeClock : 0)
+      let time = this.$store.getters.getConfig.reminderDuration
+      return (clock % time) / time * 100
+    },
+    blackScreen() {
+      document.getElementsByTagName('html')[0].style.backgroundColor = 'rgb(0,0,0)'
+      setTimeout("document.getElementsByTagName('html')[0].style.backgroundColor = 'rgba(0,0,0,0)'", 3000)
     }
   },
   computed: {
@@ -109,7 +125,7 @@ export default {
       style += (modelWidth / 5) * 6;
       style += "px;";
       return style;
-    },
+    }
   },
 };
 </script>

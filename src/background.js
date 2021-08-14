@@ -4,6 +4,7 @@ import { app, protocol, BrowserWindow, ipcMain, Notification } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const isIgnoreMouse = true;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -29,7 +30,7 @@ async function createWindow () {
   })
 
   win.setAlwaysOnTop(true, "pop-up-menu")
-  win.setIgnoreMouseEvents(true, { forward: true })
+  if (isIgnoreMouse) win.setIgnoreMouseEvents(true, { forward: true })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -94,6 +95,8 @@ ipcMain.on('notice', (event, args) => {
 
 // Ignore the mouse event
 ipcMain.on('ignoreMouse', (event, args) => {
-  // console.log(args)
-  BrowserWindow.fromWebContents(event.sender).setIgnoreMouseEvents(args, { forward: true })
+  if (isIgnoreMouse) {
+    BrowserWindow.fromWebContents(event.sender).setIgnoreMouseEvents(args, { forward: true })
+  }
+  else console.log(args)
 })

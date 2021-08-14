@@ -1,46 +1,41 @@
-import * as PIXI from 'pixi.js'
-window.PIXI = PIXI
-const { ipcRenderer } = window.require('electron');
+import _this from '../main'
 
 const { addLive2DModel } = require('./stagemodel')
 
 /**
- * Cubism2ModelSettings
+ * Cubism2ModelSettings / 初始化Live2D模型
  * 
  * @return Live2DModel
  */
 export async function main () {
-  /** The default stage */
-  const app = new PIXI.Application({
-    view: document.getElementById('canvas'),
-    autoStart: true,
-    height: 240,
-    width: 240,
-    antialias: true, // 消除锯齿
-    backgroundAlpha: 0, // 背景不透明
-    resolution: 1, // 像素设置
-    roundPixels: true
-  })
-  // set the background color 设置画布背景颜色
-  app.renderer.backgroundColor = 0x000000
+  // get stage / 创建舞台
+  _this.$store.commit('createApp')
+  const app = _this.$store.getters.getApp
+  addListener();
+  //create model / 创建模型
+  const model = await addLive2DModel('/model/anan_hb/anan_hb.model3.json', app);
+  // 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json'
+  // 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json'
+  return model;
+}
 
-  // Add mouse listener 增加鼠标监视器
+/**
+ * Add listener for application / 为应用增加监听器
+ */
+function addListener () {
+  // Add mouse listener 增加鼠标监听器
   const el = document.getElementById('canvasContainer')
   const mb = document.getElementById('moveButton')
   el.addEventListener('mouseenter', () => {
-    ipcRenderer.send('ignoreMouse', false)
+    _this.$ipcRenderer.send('ignoreMouse', false)
   })
   el.addEventListener('mouseleave', () => {
-    ipcRenderer.send('ignoreMouse', true)
+    _this.$ipcRenderer.send('ignoreMouse', true)
   })
-  let x = 0;
-  let y = 0;
-  let l = 0;
-  let t = 0;
-  let nl = 0;
-  let nt = 0;
-  let isDown = false;
-  let mouseTicking = false;
+  let x = 0; let y = 0;
+  let l = 0; let t = 0;
+  let nl = 0; let nt = 0;
+  let isDown = false; let mouseTicking = false;
   // mouse down / 鼠标按下事件
   mb.onmousedown = function (e) {
     // get current x & y / 获取x坐标和y坐标
@@ -80,9 +75,4 @@ export async function main () {
     // close the key / 开关关闭
     isDown = false;
   }
-  const model = await addLive2DModel('/model/anan_hb/anan_hb.model3.json', app);
-  // 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json'
-  // 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json'
-
-  return model;
 }

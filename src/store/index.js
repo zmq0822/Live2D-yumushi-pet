@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import _this from '../main'
 
 Vue.use(Vuex)
 
@@ -7,6 +8,7 @@ Vue.use(Vuex)
 // each Vuex instance is just a single state tree.
 const state = {
   count: 0,
+  pixiApp: null,
   config: null
 }
 
@@ -21,6 +23,28 @@ const mutations = {
   },
   decrement (state) {
     state.count--
+  },
+  // create pixi app
+  createApp (state) {
+    // new app
+    if (state.pixiApp === null) {
+      state.pixiApp = new _this.$pixiApplication({
+        view: document.getElementById('canvas'),
+        autoStart: true,
+        height: 240,
+        width: 240,
+        antialias: true, // antialias / 消除锯齿
+        backgroundAlpha: 0, // backgroundAlpha / 背景不透明
+        resolution: 1, // resolution / 像素设置
+        roundPixels: true
+      })
+      // set the background color / 设置画布背景颜色
+      state.pixiApp.renderer.backgroundColor = 0x000000
+    }
+  },
+  // set config
+  setConfig (state, n) {
+    state.config = n;
   }
 }
 
@@ -42,20 +66,18 @@ const actions = {
       }, 1000)
     })
   },
-  async getConfig ({ commit, state }) {
-    if (state.config !== null) {
-      return state.config;
-    }
-    else {
-      return commit
-    }
-
-  }
 }
 
 // getters are functions.
 const getters = {
-  evenOrOdd: state => state.count % 2 === 0 ? 'even' : 'odd'
+  evenOrOdd: state => state.count % 2 === 0 ? 'even' : 'odd',
+  // get the pixi app
+  getApp: state => {
+    return state.pixiApp;
+  },
+  getConfig: state => {
+    return state.config;
+  }
 }
 
 // A Vuex instance is created by combining the state, mutations, actions,

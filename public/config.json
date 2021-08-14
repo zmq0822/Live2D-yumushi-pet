@@ -1,5 +1,6 @@
 {
     "dialogDuration": 5,
     "reminderDuration": 1200,
-    "reminderVisible": true
+    "reminderVisible": true,
+    "blackScreen": true
 }

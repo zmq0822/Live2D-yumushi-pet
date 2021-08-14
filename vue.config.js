@@ -2,7 +2,7 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        asarUnpack: ['**/config.json', '**/model/*'],
+        asarUnpack: ['**/config.json', '**/model/*', '**/lang/*'],
         win: {
           icon: './public/favicon.ico'
         },
