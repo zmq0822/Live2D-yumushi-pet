@@ -100,7 +100,7 @@ function showDialog (model, text) {
 
 /**
  * Return the random word / 返回随机怪话
- * @param {string} text The dialog text / 对话框文本
+ * @param {string} text The dialog type / 对话框文本类型
  */
 function getText (text) {
     let texts = _this.$t(text).split("|")

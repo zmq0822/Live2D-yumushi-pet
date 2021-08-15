@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <v-app id="app">
     <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -41,9 +41,7 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   background-color: rgba(0, 0, 0, 0);
 }

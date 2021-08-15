@@ -9,7 +9,7 @@ module.exports = {
         // mac: {
         //   icon: './public/app.png'
         // },
-        // productName: 'Akantantool'
+        productName: 'YMSPet'
       }
     }
   },

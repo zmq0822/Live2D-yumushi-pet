@@ -22,14 +22,7 @@ Vue.prototype.$ipcRenderer = ipcRenderer;
 
 Vue.config.productionTip = false
 
-/**
- * The vue object
- * @param {Application} $pixiApplication
- * @param {Live2DModel} $live2d
- * @param {ipcRenderer} $ipcRenderer
- * @param {vuetify} $vuetify
- * @param {store} $store
- */
+/** The vue object */
 const newVue = new Vue({
   vuetify,
   store,

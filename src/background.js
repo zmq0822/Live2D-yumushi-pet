@@ -14,9 +14,9 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    fullscreen: true,
     transparent: true,
     resizable: false,
+    hasShadow: false,
     frame: false,
     webPreferences: {
 
@@ -28,7 +28,7 @@ async function createWindow () {
       contextIsolation: false,
     }
   })
-
+  win.maximize();
   win.setAlwaysOnTop(true, "pop-up-menu")
   if (isIgnoreMouse) win.setIgnoreMouseEvents(true, { forward: true })
 

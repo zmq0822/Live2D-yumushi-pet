@@ -17,22 +17,30 @@
         <v-slide-x-reverse-transition>
           <v-col cols="2" v-show="showButton" style="z-index: 25">
             <v-row no-gutters>
-              <v-col cols="12" class="floatBotton">
+              <v-col cols="12">
                 <v-progress-circular
                   :rotate="-90"
                   :size="this.modelWidth / 6"
                   :width="this.modelWidth / 12"
                   :value="clockCal()"
+                  class="floatBotton"
                 >
                   <v-icon dark :size="iconSize">mdi-bell</v-icon>
                 </v-progress-circular>
               </v-col>
-              <v-col cols="12" class="floatBotton">
-                <v-btn fab dark :width="buttonSize" :height="buttonSize" elevation="0">
+              <!-- <v-col cols="12">
+                <v-btn
+                  fab
+                  dark
+                  :width="buttonSize"
+                  :height="buttonSize"
+                  elevation="0"
+                  class="floatBotton"
+                >
                   <v-icon dark :size="iconSize">mdi-account</v-icon>
                 </v-btn>
-              </v-col>
-              <v-col cols="12" class="floatBotton">
+              </v-col>-->
+              <v-col cols="12">
                 <v-btn
                   fab
                   dark
@@ -40,15 +48,52 @@
                   :height="buttonSize"
                   elevation="0"
                   @click="resetModel()"
+                  class="floatBotton"
                 >
                   <v-icon dark :size="iconSize">mdi-autorenew</v-icon>
                 </v-btn>
               </v-col>
-              <v-col v-for="i in 1" :key="i" cols="12" class="floatBotton" id="moveButton">
-                <v-btn fab dark :width="buttonSize" :height="buttonSize" elevation="0">
+              <v-col v-for="i in 1" :key="i" cols="12" id="moveButton">
+                <v-btn
+                  fab
+                  dark
+                  :width="buttonSize"
+                  :height="buttonSize"
+                  elevation="0"
+                  class="floatBotton"
+                >
                   <v-icon dark :size="iconSize">mdi-arrow-all</v-icon>
                 </v-btn>
               </v-col>
+              <!-- test -->
+              <v-col cols="12">
+                <v-dialog v-model="dialog" width="500">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      class="floatBotton"
+                      fab
+                      dark
+                      :width="buttonSize"
+                      :height="buttonSize"
+                      elevation="0"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon dark :size="iconSize">mdi-cog</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card @mouseenter="setIgnoreMouse" @mouseleave="cancelIgnoreMouse">
+                    <v-card-title class="text-h5 grey lighten-2">Setting menu</v-card-title>
+                    <v-card-text>TODO</v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" text @click="dialog = false">OK</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+              <!-- test -->
             </v-row>
           </v-col>
         </v-slide-x-reverse-transition>
@@ -65,6 +110,7 @@ export default {
     return {
       showButton: false,
       model: null,
+      dialog: false,
     };
   },
   mounted () {
@@ -79,6 +125,12 @@ export default {
     msg: String,
   },
   methods: {
+    setIgnoreMouse () {
+      this.$ipcRenderer.send('ignoreMouse', false)
+    },
+    cancelIgnoreMouse () {
+      this.$ipcRenderer.send('ignoreMouse', true)
+    },
     resetModel () {
       if (this.model !== null) {
         clearInterval(this.model.timer);
@@ -94,7 +146,7 @@ export default {
       let time = this.$store.getters.getConfig.reminderDuration
       return (clock % time) / time * 100
     },
-    blackScreen() {
+    blackScreen () {
       document.getElementsByTagName('html')[0].style.backgroundColor = 'rgb(0,0,0)'
       setTimeout("document.getElementsByTagName('html')[0].style.backgroundColor = 'rgba(0,0,0,0)'", 3000)
     }
@@ -154,6 +206,5 @@ export default {
 .floatBotton {
   margin: 2.5px;
   z-index: 25;
-  float: right;
 }
 </style>

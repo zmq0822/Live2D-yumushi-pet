@@ -13,7 +13,8 @@ export async function main () {
   const app = _this.$store.getters.getApp
   addListener();
   //create model / 创建模型
-  const model = await addLive2DModel('/model/anan_hb/anan_hb.model3.json', app);
+  const modelLocation = _this.$store.getters.getConfig.modelLocation;
+  const model = await addLive2DModel(modelLocation, app);
   // 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json'
   // 'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json'
   return model;
@@ -23,7 +24,7 @@ export async function main () {
  * Add listener for application / 为应用增加监听器
  */
 function addListener () {
-  // Add mouse listener 增加鼠标监听器
+  // Add mouse listener / 增加鼠标监听器
   const el = document.getElementById('canvasContainer')
   const mb = document.getElementById('moveButton')
   el.addEventListener('mouseenter', () => {
