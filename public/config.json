@@ -1,4 +1,5 @@
 {
+    "themeColor": "#1D1D1D",
     "modelLocation": "/model/anan_hb/anan_hb.model3.json",
     "dialogDuration": 5,
     "reminderDuration": 1200,

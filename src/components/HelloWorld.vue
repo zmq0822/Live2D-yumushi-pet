@@ -19,81 +19,69 @@
             <v-row no-gutters>
               <v-col cols="12">
                 <v-progress-circular
+                  color="primary"
                   :rotate="-90"
                   :size="this.modelWidth / 6"
                   :width="this.modelWidth / 12"
                   :value="clockCal()"
-                  class="floatBotton"
+                  class="floatButton"
+                  @mouseenter="showDialog(model, getText('menuReminder'));"
                 >
                   <v-icon dark :size="iconSize">mdi-bell</v-icon>
                 </v-progress-circular>
               </v-col>
-              <!-- <v-col cols="12">
-                <v-btn
-                  fab
-                  dark
-                  :width="buttonSize"
-                  :height="buttonSize"
-                  elevation="0"
-                  class="floatBotton"
-                >
-                  <v-icon dark :size="iconSize">mdi-account</v-icon>
-                </v-btn>
-              </v-col>-->
               <v-col cols="12">
                 <v-btn
+                  color="primary"
                   fab
                   dark
                   :width="buttonSize"
                   :height="buttonSize"
                   elevation="0"
                   @click="resetModel()"
-                  class="floatBotton"
+                  class="floatButton"
+                  @mouseenter="showDialog(model, getText('menuReset'));"
                 >
                   <v-icon dark :size="iconSize">mdi-autorenew</v-icon>
                 </v-btn>
               </v-col>
-              <v-col v-for="i in 1" :key="i" cols="12" id="moveButton">
+              <v-col cols="12" id="moveButton">
                 <v-btn
+                  color="primary"
                   fab
                   dark
                   :width="buttonSize"
                   :height="buttonSize"
                   elevation="0"
-                  class="floatBotton"
+                  class="floatButton"
+                  @mouseenter="showDialog(model, getText('menuMove'));"
                 >
                   <v-icon dark :size="iconSize">mdi-arrow-all</v-icon>
                 </v-btn>
               </v-col>
-              <!-- test -->
+              <!-- Setting Menu -->
               <v-col cols="12">
-                <v-dialog v-model="dialog" width="500">
+                <v-dialog v-model="dialog" width="700" scrollable hide-overlay>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      class="floatBotton"
+                      color="primary"
                       fab
                       dark
                       :width="buttonSize"
                       :height="buttonSize"
                       elevation="0"
+                      class="floatButton"
+                      @mouseenter="showDialog(model, getText('menuSetting'));"
                       v-bind="attrs"
                       v-on="on"
                     >
                       <v-icon dark :size="iconSize">mdi-cog</v-icon>
                     </v-btn>
                   </template>
-                  <v-card @mouseenter="setIgnoreMouse" @mouseleave="cancelIgnoreMouse">
-                    <v-card-title class="text-h5 grey lighten-2">Setting menu</v-card-title>
-                    <v-card-text>TODO</v-card-text>
-                    <v-divider></v-divider>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="primary" text @click="dialog = false">OK</v-btn>
-                    </v-card-actions>
-                  </v-card>
+                  <SettingMenu />
                 </v-dialog>
               </v-col>
-              <!-- test -->
+              <!-- Setting Menu End -->
             </v-row>
           </v-col>
         </v-slide-x-reverse-transition>
@@ -103,83 +91,101 @@
 </template>
 
 <script>
-import { main } from "../live2d";
+import { main } from '../live2d'
+import { showDialog, getText } from '../live2d/stagemodel'
+import SettingMenu from './SettingMenu.vue'
 
 export default {
   data () {
     return {
       showButton: false,
-      model: null,
-      dialog: false,
-    };
+      model: null
+    }
   },
   mounted () {
     this.$nextTick(() => {
       main().then((res) => {
-        this.model = res;
-      });
-    });
+        this.model = res
+      })
+    })
   },
-  name: "TouchFish",
+  name: 'TouchFish',
+  components: {
+    SettingMenu
+  },
   props: {
-    msg: String,
+    msg: String
   },
   methods: {
-    setIgnoreMouse () {
-      this.$ipcRenderer.send('ignoreMouse', false)
-    },
-    cancelIgnoreMouse () {
-      this.$ipcRenderer.send('ignoreMouse', true)
-    },
+    showDialog,
+    getText,
     resetModel () {
       if (this.model !== null) {
-        clearInterval(this.model.timer);
-        this.model.destroy(true);
-        this.model = null;
+        clearInterval(this.model.timer)
+        this.model.destroy(true)
+        this.model = null
       }
       main().then((res) => {
-        this.model = res;
-      });
+        this.model = res
+      })
     },
     clockCal () {
-      let clock = (this.model !== null ? this.model.activeClock : 0)
-      let time = this.$store.getters.getConfig.reminderDuration
-      return (clock % time) / time * 100
+      const clock = this.model !== null ? this.model.activeClock : 0
+      const time = this.$store.getters.getConfig.reminderDuration
+      return ((clock % time) / time) * 100
     },
+    // TEST
     blackScreen () {
       document.getElementsByTagName('html')[0].style.backgroundColor = 'rgb(0,0,0)'
-      setTimeout("document.getElementsByTagName('html')[0].style.backgroundColor = 'rgba(0,0,0,0)'", 3000)
+      setTimeout(
+        function () {
+          document.getElementsByTagName('html')[0].style.backgroundColor = 'rgba(0,0,0,0)'
+        }, 3000)
     }
   },
   computed: {
     modelWidth () {
-      let modelWidth = this.model !== null ? this.model.width : 10;
-      return modelWidth;
+      const modelWidth = this.model !== null ? this.model.width : 10
+      return modelWidth
     },
     iconSize () {
-      return this.modelWidth / 10 + "px";
+      return this.modelWidth / 10 + 'px'
     },
     buttonSize () {
-      return this.modelWidth / 6 + "px";
+      return this.modelWidth / 6 + 'px'
     },
     floatDialogStyle () {
-      let modelWidth = this.modelWidth;
-      let style = "font-size:";
-      style += Math.sqrt(modelWidth) * 6;
-      style += "%;width:";
-      style += modelWidth;
-      style += "px;";
-      return style;
+      const modelWidth = this.modelWidth
+      let style = 'font-size:'
+      style += Math.sqrt(modelWidth) * 6
+      style += '%;width:'
+      style += modelWidth
+      style += 'px;'
+      style += 'background-color:'
+      style += this.$store.state.config.themeColor
+      style += '4D;'
+      style += 'border: 1px solid '
+      style += this.$store.state.config.themeColor
+      style += '80;'
+      return style
     },
     canvasContainerStyle () {
-      let modelWidth = this.modelWidth;
-      let style = "width:";
-      style += (modelWidth / 5) * 6;
-      style += "px;";
-      return style;
+      const modelWidth = this.modelWidth
+      let style = 'width:'
+      style += (modelWidth / 5) * 6
+      style += 'px;'
+      return style
+    },
+    dialog: {
+      get () {
+        return this.$store.state.settingMenu
+      },
+      set (value) {
+        this.$store.commit('changeSettingMenu', value)
+      }
     }
-  },
-};
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -192,8 +198,6 @@ export default {
 }
 #floatDialog {
   padding: 15px;
-  background-color: rgba(255, 225, 126, 0.3);
-  border: 1px solid rgba(255, 225, 126, 0.5);
   border-radius: 15px;
   z-index: -1;
   display: -webkit-box;
@@ -201,9 +205,10 @@ export default {
   -webkit-box-pack: center;
   -webkit-box-align: center;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
   user-select: none;
 }
-.floatBotton {
+.floatButton {
   margin: 2.5px;
   z-index: 25;
 }

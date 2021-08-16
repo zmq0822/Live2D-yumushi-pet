@@ -9,7 +9,8 @@ Vue.use(Vuex)
 const state = {
   count: 0,
   pixiApp: null,
-  config: null
+  config: null,
+  settingMenu: false
 }
 
 // mutations are operations that actually mutate the state.
@@ -44,7 +45,15 @@ const mutations = {
   },
   // set config
   setConfig (state, n) {
-    state.config = n;
+    state.config = n
+  },
+  // show setting menu
+  changeSettingMenu (state, n) {
+    state.settingMenu = n
+  },
+  // change theme color
+  changeColor (state, n) {
+    state.config.themeColor = n
   }
 }
 
@@ -65,7 +74,7 @@ const actions = {
         resolve()
       }, 1000)
     })
-  },
+  }
 }
 
 // getters are functions.
@@ -73,10 +82,10 @@ const getters = {
   evenOrOdd: state => state.count % 2 === 0 ? 'even' : 'odd',
   // get the pixi app
   getApp: state => {
-    return state.pixiApp;
+    return state.pixiApp
   },
   getConfig: state => {
-    return state.config;
+    return state.config
   }
 }
 

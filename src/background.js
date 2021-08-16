@@ -1,10 +1,10 @@
-'use strict'
-
-import { app, protocol, BrowserWindow, ipcMain, Notification } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, Notification, Menu, Tray } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-const isIgnoreMouse = true;
+const isIgnoreMouse = true
+let win
+let tray = null
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -13,10 +13,9 @@ protocol.registerSchemesAsPrivileged([
 
 async function createWindow () {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     transparent: true,
     resizable: false,
-    hasShadow: false,
     frame: false,
     webPreferences: {
 
@@ -25,11 +24,12 @@ async function createWindow () {
       // nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       // contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: false
     }
   })
-  win.maximize();
-  win.setAlwaysOnTop(true, "pop-up-menu")
+  win.maximize()
+  win.setAlwaysOnTop(true, 'pop-up-menu')
+  win.setSkipTaskbar(true)
   if (isIgnoreMouse) win.setIgnoreMouseEvents(true, { forward: true })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -70,6 +70,18 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  // eslint-disable-next-line no-undef
+  tray = new Tray(`${__static}\\favicon.ico`)
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '退出 Exit',
+      click: () => {
+        win.destroy()
+      }
+    } // 强制退出
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setContextMenu(contextMenu)
   createWindow()
 })
 
@@ -97,6 +109,5 @@ ipcMain.on('notice', (event, args) => {
 ipcMain.on('ignoreMouse', (event, args) => {
   if (isIgnoreMouse) {
     BrowserWindow.fromWebContents(event.sender).setIgnoreMouseEvents(args, { forward: true })
-  }
-  else console.log(args)
+  } else console.log(args)
 })

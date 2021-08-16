@@ -14,13 +14,16 @@ export default {
   },
   created () {
     // get config / 获取配置
-    const config = JSON.parse(this.load("config.json"));
-    this.$store.commit('setConfig', config);
+    const config = JSON.parse(this.load('config.json'))
+    this.$store.commit('setConfig', config)
     // get language / 获取语言
-    const zhHans = JSON.parse(this.load("lang/zhHans.json"));
-    const en = JSON.parse(this.load("lang/en.json"));
+    const zhHans = JSON.parse(this.load('lang/zhHans.json'))
+    const en = JSON.parse(this.load('lang/en.json'))
     this.$i18n.setLocaleMessage('zhHans', zhHans)
     this.$i18n.setLocaleMessage('en', en)
+    // get color / 获取颜色
+    this.$vuetify.theme.themes.light.primary = config.themeColor
+    this.$vuetify.theme.themes.dark.primary = config.themeColor
   },
   methods: {
     /**
@@ -28,12 +31,12 @@ export default {
     * @param {string} name The URL for resource / 资源地址
     */
     load (name) {
-      let xhr = new XMLHttpRequest(),
-        okStatus = document.location.protocol === "file:" ? 0 : 200;
-      xhr.open('GET', name, false);
-      xhr.overrideMimeType("text/html;charset=utf-8");
-      xhr.send(null);
-      return xhr.status === okStatus ? xhr.responseText : null;
+      const xhr = new XMLHttpRequest()
+      const okStatus = document.location.protocol === 'file:' ? 0 : 200
+      xhr.open('GET', name, false)
+      xhr.overrideMimeType('text/html;charset=utf-8')
+      xhr.send(null)
+      return xhr.status === okStatus ? xhr.responseText : null
     }
   }
 }
@@ -42,7 +45,6 @@ export default {
 <style>
 #app {
   -webkit-font-smoothing: antialiased;
-  text-align: center;
   background-color: rgba(0, 0, 0, 0);
 }
 body::-webkit-scrollbar {
